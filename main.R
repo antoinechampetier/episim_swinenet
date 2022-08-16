@@ -69,6 +69,7 @@ for(scenario in list.files(relative_path_to_scenarios)){
     dir.create(paste(relative_path_to_output,scenario,sep="")) # make a simulation folder with the name of the input file
     file.copy(file.path(relative_path_to_scenarios, scenario), paste(relative_path_to_output,"/",scenario,sep=""), overwrite = TRUE) # including a copy of the input scenario file
     save(sim_output, file = paste(relative_path_to_output,"/",scenario,"/","output_simulation_set.RData",sep=""))  
+    unlink(file.path(relative_path_to_scenarios, scenario))
     source("mk_plot_simulation_set.R")
 
 
