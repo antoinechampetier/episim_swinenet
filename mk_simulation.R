@@ -19,13 +19,7 @@ output_run <- data.frame(t_step=c(1:simulation_steps),
                          incidence_wb=rep(0,simulation_steps),
                          detections=rep(0,simulation_steps)) 
 
-output_preval_incid <- data.frame(t_step=c(1:simulation_steps), 
-                                  prevalence_farm=rep(0,simulation_steps),
-                                  prevalence_wb=rep(0,simulation_steps),
-                                  prevalence_pigs=rep(0,simulation_steps),
-                                  incidence_farm=rep(0,simulation_steps),
-                                  incidence_wb=rep(0,simulation_steps),
-                                  incidence_pigs=rep(0,simulation_steps)) 
+
 
 output_detection <- data.frame(t_step=1:simulation_steps, detections=rep(NA,simulation_steps))
 
