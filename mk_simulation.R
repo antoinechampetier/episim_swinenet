@@ -28,7 +28,7 @@ output_detection <- data.frame(t_step=1:simulation_steps, detections=rep(NA,simu
 vertex_variables <- f_inoculate(init_vertex_variable, index_case_probabilities) # note that the index case is applied to the initialized, disease-free vertex state variable
 
 t=1
-## LOOP OVER SIMULATION TIME STEPS #### t=t+1
+## LOOP OVER SIMULATION TIME STEPS #### 
 for(t in 1:simulation_steps){
 
   # Set a minimum population of 1 for the vertices that are zero (coming from lack of AGIS data for instance)
