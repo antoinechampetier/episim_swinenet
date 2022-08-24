@@ -6,12 +6,12 @@
 #################################################################################################
 
 ### SET REPLICATION PARAMETERS ####
-sim_replications = 20
+sim_replications = 5
 
 ### SET SIMULATION TIMING PARAMETERS ####
 time_step = "days" ## remove from here later?
 date_start = "2019-05-01" ## applied to anonymized TVD data for this test environment
-simulation_steps = 200 ## number of time steps the simulation is run (here days).
+simulation_steps = 100 ## number of time steps the simulation is run (here days).
 
 
 ### SET DISEASE PARAMETERS ####
@@ -37,8 +37,8 @@ probas_infections_param <- c("self" = 0.9,
                             "s" = 0.2 )
 
 space_cutoff = 2000 # cutoff distance for space contacts.
-distance_param_haltung = 200 # distance-equivalent Haltings form step (e.g. with distance_param = 200, Haltungsform 4 is equivalent to 200 meters, 3 like 400, 2 like 600, )
-distance_param_wb_to_wb = 200 # distance-equivalent for wild boards next to each other
+distance_param_haltung = 400 # distance-equivalent Haltings form step (e.g. with distance_param = 200, Haltungsform 4 is equivalent to 200 meters, 3 like 400, 2 like 600, )
+distance_param_wb_to_wb = 400 # distance-equivalent for wild boards next to each other
 
 resimul_tours = FALSE # to re'simulate the sequence of tours (transport and vet)
 
@@ -57,18 +57,20 @@ source("all_data_import_functions.R")
 # mk_index_case
 # mk_surveillance
 
-### Defining non default index case  ####
+### Defining index case  ####
+# Un-comment one of the followinf for non-default index case
 
-
-#source("mk_index_case_italy_border.R")
-#source("mk_index_case_labor.R")
-#source("mk_index_case_rest_area.R")
-index_case_parameter = 20 # used to set the probabilities of index cases
+#source("scenarios_index_case/mk_index_case_italy_border.R")
+#source("scenarios_index_case/mk_index_case_labor.R")
+#source("scenarios_index_case/mk_index_case_rest_area.R")
+index_case_parameter = 20 # used to set the probabilities of index cases from the vertex property for the scenario
 index_case_number = 1 # the maximum number of units infected as index case. the probabilities of index case are still used. See f_inoculate in all_simulaiton_functions.R
 
 
 ### Defining non default surveillance ####
-#source("mk_surveillance_target_ring.R")
+# Un-comment one of the followinf for non-default surveillance
+
+#source("scenarios_surveillance/mk_surveillance_target_ring.R")
 surveillance_policy = "random"
 surveillance_parameter = 0.0500 # for random is it the share of vertices tested each time period.
 
@@ -136,7 +138,7 @@ contact_network_edges<- mk_contact_network(vertex_key,
 
 surveillance_schedule <- mk_surveillance(vertex_key, surveillance_parameter, surveillance_policy)
 
-index_case_probabilities <- mk_index_case(vertex_key,index_case_scenario, index_case_parameter)
+index_case_probabilities <- mk_index_case(vertex_key, index_case_parameter)
 
 
 

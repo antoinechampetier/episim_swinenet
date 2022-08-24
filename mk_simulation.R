@@ -25,7 +25,7 @@ output_detection <- data.frame(t_step=1:simulation_steps, detections=rep(NA,simu
 
 ## GENERATE INDEX CASE(S)####
 
-vertex_variables <- f_inoculate(init_vertex_variable, index_case_probabilities) # note that the index case is applied to the initialized, disease-free vertex state variable
+vertex_variables <- f_inoculate(init_vertex_variable, index_case_probabilities, index_case_number) # note that the index case is applied to the initialized, disease-free vertex state variable
 
 t=1
 ## LOOP OVER SIMULATION TIME STEPS #### 
