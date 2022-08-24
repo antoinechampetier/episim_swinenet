@@ -10,7 +10,7 @@ sim_replications = 5
 
 ### SET SIMULATION TIMING PARAMETERS ####
 time_step = "days" ## remove from here later?
-date_start = "2019-05-01" ## applied to anonymized TVD data for this test environment
+date_start = "2017-05-01" ## applied to anonymized TVD data for this test environment
 simulation_steps = 100 ## number of time steps the simulation is run (here days).
 
 
@@ -76,7 +76,7 @@ source("all_simulation_functions.R")
 #source("scenarios_index_case/mk_index_case_labor.R")
 #source("scenarios_index_case/mk_index_case_rest_area.R")
 index_case_parameter = 20 # used to set the probabilities of index cases from the vertex property for the scenario
-index_case_number = 1 # the maximum number of units infected as index case. the probabilities of index case are still used. See f_inoculate in all_simulaiton_functions.R
+index_case_number = 1000 # the maximum number of units infected as index case. the probabilities of index case are still used. See f_inoculate in all_simulaiton_functions.R
 
 
 

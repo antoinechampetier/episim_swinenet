@@ -9,7 +9,7 @@
 
 f_inoculate <-function(vertex_variables, index_case_probabilities, index_case_number){
   infected = data.frame(index_case_state = rep(0,nrow(vertex_parameters))) # initialize a vector with 0 cases
-  while (sum(infected$index_case_state) <=  index_case_number){
+  while (sum(infected$index_case_state) ==  0){
     infected$index_case_state <- as.numeric(runif(length(index_case_probabilities$probability)) < index_case_probabilities$probability) # note that runif is the uniform distribution draw
   }
   if (sum(infected$index_case_state) >  index_case_number){
@@ -118,13 +118,16 @@ f_detection <-function(vertex_variables,surveillance_schedule_t){
     test_infected_vertex$detections <-  rbinom(nrow(test_infected_vertex),test_infected_vertex$infected_tested_pigs, unlist(tests_sensitivities[test_infected_vertex$test_type]))
   
     output_detection <- sum(test_infected_vertex$detections)
+    
+
     }
   }
 
-
+  # this would need to be changed in order for the detection function to be allowed to change surveillance_schedule for dynamic surveillance strategies
+  #if(output_detection >0){surveillance_schedule  <- surveillance_schedule[t,]}
   
   
-  return(output_detection) # this would need to be changed in order for the detection function to be allowed to change surveillance_schedule for dynamic surveillance strategies
+  return(output_detection) 
 }
 
 

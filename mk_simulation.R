@@ -28,7 +28,7 @@ output_detection <- data.frame(t_step=1:simulation_steps, detections=rep(NA,simu
 vertex_variables <- f_inoculate(init_vertex_variable, index_case_probabilities, index_case_number) # note that the index case is applied to the initialized, disease-free vertex state variable
 
 t=1
-## LOOP OVER SIMULATION TIME STEPS #### 
+## LOOP OVER SIMULATION TIME STEPS ####    t=t+1
 for(t in 1:simulation_steps){
 
   # Set a minimum population of 1 for the vertices that are zero (coming from lack of AGIS data for instance)
@@ -46,6 +46,11 @@ for(t in 1:simulation_steps){
   # implement detection based on schedule at time step t and save to output for detection
   output_run$detections[output_run$t_step==t] <- f_detection(vertex_variables,surveillance_schedule[surveillance_schedule$t_step == t,])
 
+  
+  # this would need to be changed in order for the detection function to be allowed to change surveillance_schedule for dynamic surveillance strategies
+  # if(output_run$detections[output_run$t_step==t] >0){surveillance_schedule  <- surveillance_schedule[t,]}
+  
+  
   # advance infection states and population changes from population data
   vertex_variables <- f_population(vertex_variables,vertex_pop[t,])
   
