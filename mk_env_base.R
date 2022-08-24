@@ -63,9 +63,8 @@ source("all_data_import_functions.R")
 #source("mk_index_case_italy_border.R")
 #source("mk_index_case_labor.R")
 #source("mk_index_case_rest_area.R")
-index_case_scenario = "defaut"
-index_case_parameter = 20
-
+index_case_parameter = 20 # used to set the probabilities of index cases
+index_case_number = 1 # the maximum number of units infected as index case. the probabilities of index case are still used. See f_inoculate in all_simulaiton_functions.R
 
 
 ### Defining non default surveillance ####

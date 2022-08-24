@@ -7,11 +7,17 @@
 
 
 
-f_inoculate <-function(vertex_variables, index_case_probabilities){
+f_inoculate <-function(vertex_variables, index_case_probabilities, index_case_number){
   infected = data.frame(index_case_state = rep(0,nrow(vertex_parameters))) # initialize a vector with 0 cases
-  while (sum(infected$index_case_state) == 0){
+  while (sum(infected$index_case_state) <=  index_case_number){
     infected$index_case_state <- as.numeric(runif(length(index_case_probabilities$probability)) < index_case_probabilities$probability) # note that runif is the uniform distribution draw
   }
+  if (sum(infected$index_case_state) >  index_case_number){
+    index_cases_long = which(infected$index_case_state >0 )
+    index_cases_long_remove = sample(index_cases_long, sum(infected$index_case_state)-index_case_number, replace = FALSE)
+    infected$index_case_state[index_cases_long_remove] = 0
+  }
+  
   vertex_variables$susceptible[infected$index_case_state>0] <- vertex_variables$susceptible[infected$index_case_state>0] - 1 # remove susceptible where index cases have occurred
   vertex_variables$latent[infected$index_case_state>0] <- vertex_variables$latent[infected$index_case_state>0] + 1 # add to latent where index cases have occurred
   vertex_variables$status_infected_pigs[infected$index_case_state>0] <- vertex_variables$status_infected_pigs[infected$index_case_state>0] + 1 # add to status of where index cases have occurred

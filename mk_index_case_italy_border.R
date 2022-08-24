@@ -11,7 +11,7 @@
 
 
 
-mk_index_case<- function(vertex_key,index_case_scenario, index_case_parameter){
+mk_index_case<- function(vertex_key, index_case_parameter){
   relative_path_to_processed_data = "../epi_data/processed/"
   load(paste(relative_path_to_processed_data,"list_italian_border_gemeinde_final.Rdata",sep =""))
   load(paste(relative_path_to_processed_data,"wildboar_units.Rdata",sep =""))

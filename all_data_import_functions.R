@@ -283,7 +283,7 @@ mk_surveillance<- function(vertex_key, surveillance_parameter, surveillance_poli
 
 
 
-mk_index_case<- function(vertex_key,index_case_scenario, index_case_parameter){
+mk_index_case<- function(vertex_key, index_case_parameter){
   index_case_probabilities <- data.frame(ID_vertex = vertex_key$ID_vertex,
                                          probability = rep(0,nrow(vertex_key)))
   index_case_probabilities$probability[ sample(nrow(vertex_key),index_case_parameter)]=.9                                       

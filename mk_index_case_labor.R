@@ -7,7 +7,7 @@
 
 
 
-mk_index_case<- function(vertex_key,index_case_scenario, index_case_parameter){
+mk_index_case<- function(vertex_key, index_case_parameter){
   relative_path_to_processed_data = "../epi_data/processed/"
   load(paste(relative_path_to_processed_data,"labor_data_final.RData",sep ="" ))
   labor_indicator  <-  unique(labor_AGIS[labor_AGIS$year == year(ymd(date_start)),c("swinenet_id","foreign")])
