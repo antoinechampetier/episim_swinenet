@@ -256,7 +256,7 @@ mk_contact_network <- function(vertex_key, date_start,  simulation_steps, space_
 
 
 
-mk_surveillance<- function(vertex_key, surveillance_parameter, surveillance_policy){
+mk_surveillance<- function(vertex_key, surveillance_parameter){
   
   surveillance_schedule <- matrix(0,nrow = nrow(vertex_key), ncol = simulation_steps) 
   surveillance_density = surveillance_parameter # share of nodes tested each day

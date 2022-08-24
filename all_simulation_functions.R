@@ -144,8 +144,12 @@ f_population <-function(vertex_variables,vertex_pop_t){
   vertex_variables$susceptible[vertex_variables$susceptible<0] <- 0
   vertex_variables$removed[vertex_pop_t<0] <- vertex_variables$removed[vertex_pop_t<0] - vertex_pop_t[vertex_pop_t<0] #adding the net births/deaths to removed when negative (when they are a net death)
   
-  # rest the susceptible population to the base in wildboar units)
-  vertex_variables$susceptible[vertex_parameters$type == "wildboar"] <-  init_vertex_variable$susceptible[vertex_parameters$type == "wildboar"] 
+  # reset the susceptible population to the base in wildboar units by a fraction of wild boar population per day
+  vertex_variables$susceptible[vertex_parameters$type == "wildboar"] <-  vertex_variables$susceptible[vertex_parameters$type == "wildboar"] +
+                                            init_vertex_variable$susceptible[vertex_parameters$type == "wildboar"] * wildboar_repopulation_speed
+  
+  vertex_variables$susceptible[vertex_parameters$type == "wildboar" & vertex_variables$susceptible > init_vertex_variable$susceptible]  <- 
+    init_vertex_variable$susceptible[vertex_parameters$type == "wildboar" & vertex_variables$susceptible > init_vertex_variable$susceptible]
   
   
   ## advance disease stages (backwards from removed to latent)

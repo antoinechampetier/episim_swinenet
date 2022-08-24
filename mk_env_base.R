@@ -40,6 +40,8 @@ space_cutoff = 2000 # cutoff distance for space contacts.
 distance_param_haltung = 400 # distance-equivalent Haltings form step (e.g. with distance_param = 200, Haltungsform 4 is equivalent to 200 meters, 3 like 400, 2 like 600, )
 distance_param_wb_to_wb = 400 # distance-equivalent for wild boards next to each other
 
+wildboar_repopulation_speed = .1 #  fraction of base wild boar population that gets replenished per day.
+
 resimul_tours = FALSE # to re'simulate the sequence of tours (transport and vet)
 
 
@@ -57,29 +59,6 @@ source("all_data_import_functions.R")
 # mk_index_case
 # mk_surveillance
 
-### Defining index case  ####
-# Un-comment one of the followinf for non-default index case
-
-#source("scenarios_index_case/mk_index_case_italy_border.R")
-#source("scenarios_index_case/mk_index_case_labor.R")
-#source("scenarios_index_case/mk_index_case_rest_area.R")
-index_case_parameter = 20 # used to set the probabilities of index cases from the vertex property for the scenario
-index_case_number = 1 # the maximum number of units infected as index case. the probabilities of index case are still used. See f_inoculate in all_simulaiton_functions.R
-
-
-### Defining non default surveillance ####
-# Un-comment one of the followinf for non-default surveillance
-
-#source("scenarios_surveillance/mk_surveillance_target_ring.R")
-surveillance_policy = "random"
-surveillance_parameter = 0.0500 # for random is it the share of vertices tested each time period.
-
-# Parameters for the tests of type 1 and 2: 
-tests_sensitivities = list("1" = 0.95, "2" = 0.95)
-share_animal_tested = list("1" = 0.30, "2" = 0.3)
-
-
-
 ### LOAD SIMULATION FUNCTIONS ####
 source("all_simulation_functions.R")
 # f_inoculate
@@ -89,6 +68,30 @@ source("all_simulation_functions.R")
 # f_population
 # f_prevalence
 # f_detection
+
+
+### Defining index case  ####
+# Un-comment one of the following for non-default index case
+#source("scenarios_index_case/mk_index_case_italy_border.R")
+#source("scenarios_index_case/mk_index_case_labor.R")
+#source("scenarios_index_case/mk_index_case_rest_area.R")
+index_case_parameter = 20 # used to set the probabilities of index cases from the vertex property for the scenario
+index_case_number = 1 # the maximum number of units infected as index case. the probabilities of index case are still used. See f_inoculate in all_simulaiton_functions.R
+
+
+
+
+### Defining non default surveillance ####
+# Un-comment one of the following for non-default surveillance
+#source("scenarios_surveillance/mk_surveillance_target_ring.R")
+surveillance_parameter = 0.0500 # for random is it the share of vertices tested each time period.
+
+# Parameters for the tests of type 1 and 2: 
+tests_sensitivities = list("1" = 0.95, "2" = 0.95)
+share_animal_tested = list("1" = 0.30, "2" = 0.3)
+
+
+
 
 
 
@@ -102,14 +105,17 @@ load(paste(relative_path_to_processed_data,"id_reference_flat_TVD.RData",sep =""
 
 vertex_key <- mk_vertex_key(date_start, simulation_steps, paste(relative_path_to_processed_data,"activity_dates_final.RData",sep=""))
 
-# old fix, check if needed..
-# vertex_key  <- vertex_key[ vertex_key$ID_vertex != 32273,]  
-
 
 
 vertex_parameters <- mk_vertex_param(vertex_key, 
                                      paste(relative_path_to_processed_data,"parameters_all_final.RData",sep ="" ),
                                      paste(relative_path_to_processed_data,"wildboar_units.Rdata",sep ="" ))
+
+
+# this is an ad hoc fix that removes some of the vertex that donät have proper parameter information
+vertex_key  <- vertex_key[ - which(!(vertex_key$ID_vertex %in% vertex_parameters$ID_vertex)),]  
+
+
 
 vertex_pop <- mk_vertex_pop(vertex_key, date_start, simulation_steps, paste(relative_path_to_processed_data,"pop_change_vertex_final.RData",sep=""))
 
@@ -136,7 +142,7 @@ contact_network_edges<- mk_contact_network(vertex_key,
                                            resimul_tours)
 
 
-surveillance_schedule <- mk_surveillance(vertex_key, surveillance_parameter, surveillance_policy)
+surveillance_schedule <- mk_surveillance(vertex_key, surveillance_parameter)
 
 index_case_probabilities <- mk_index_case(vertex_key, index_case_parameter)
 
