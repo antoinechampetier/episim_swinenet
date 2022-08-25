@@ -6,27 +6,24 @@
 #################################################################################################
 
 ### SET REPLICATION PARAMETERS ####
-sim_replications = 5
+sim_replications = 300
 
 ### SET SIMULATION TIMING PARAMETERS ####
-time_step = "days" ## remove from here later?
-date_start = "2017-05-01" ## applied to anonymized TVD data for this test environment
-simulation_steps = 100 ## number of time steps the simulation is run (here days).
+#time_step = "days" 
+date_start = "2019-01-02" 
+simulation_steps = 300 ## number of time steps the simulation is run (here days).
 
 
 ### SET DISEASE PARAMETERS ####
-compartment_list = c("susceptible", "latent","subclinical_1","subclinical_2","clinical", "immune", "carcass","removed")
-compartment_infect = c(0,0,0.6,0.8,1,0) # this is the weight of each compartment in infectiousness relative to a clinical pig, used to within farm and across farm infections
 
-compartment_list = c("susceptible", "latent","subclinical_0","subclinical_1","subclinical_2","clinical_0","clinical_1", "removed")
-compartment_infect = c(0,0,0.5,0.6,0.8,1,1,0) # this is the weight of each compartment in infectiousness relative to a clinical pig, used to within farm and across farm infections
+compartment_list = c("susceptible", "latent","subclinical_0","subclinical_1","subclinical_2","clinical_0","clinical_1", "carcass", "removed")
+compartment_infect = c(0,0,0.5,0.6,0.8,1,1,1,0) # this is the weight of each compartment in infectiousness relative to a clinical pig, used to within farm and across farm infections
 
 compartment_num = length(compartment_list)
-infected_compartments = c(compartment_list[3:compartment_num-1]) # select the compartments that count as infected for incidence and prevalence
+infected_compartments = c(compartment_list[2:(compartment_num-2)]) # select the compartments that count as infected for incidence and prevalence
 
-transition_proba.farm= c(0,rep(1,compartment_num-2),0)
-transition_proba.wildboar=c(0,rep(1,compartment_num-2),0)
-transition_proba = list("farm" = transition_proba.farm, "wildboar" = transition_proba.wildboar)
+
+carcass_decay_wild_boar = 0.1 # probability of each carcass being removed per day in a binomial draw
 
 
 probas_infections_param <- c("self" = 0.9,
@@ -74,21 +71,35 @@ source("all_simulation_functions.R")
 # Un-comment one of the following for non-default index case
 #source("scenarios_index_case/mk_index_case_italy_border.R")
 #source("scenarios_index_case/mk_index_case_labor.R")
-#source("scenarios_index_case/mk_index_case_rest_area.R")
+source("scenarios_index_case/mk_index_case_rest_area.R")
 index_case_parameter = 20 # used to set the probabilities of index cases from the vertex property for the scenario
-index_case_number = 1000 # the maximum number of units infected as index case. the probabilities of index case are still used. See f_inoculate in all_simulaiton_functions.R
+index_case_number = 100 # the maximum number of units infected as index case. the probabilities of index case are still used. See f_inoculate in all_simulaiton_functions.R
 
 
 
 
 ### Defining non default surveillance ####
 # Un-comment one of the following for non-default surveillance
-#source("scenarios_surveillance/mk_surveillance_target_ring.R")
+source("scenarios_surveillance/mk_surveillance_farm_morbidity.R")
+#source("scenarios_surveillance/mk_surveillance_farm_mortality.R")
 surveillance_parameter = 0.0500 # for random is it the share of vertices tested each time period.
 
 # Parameters for the tests of type 1 and 2: 
-tests_sensitivities = list("1" = 0.95, "2" = 0.95)
-share_animal_tested = list("1" = 0.30, "2" = 0.3)
+
+tests_parameters  <- data.frame("type" = as.character(),
+                                "share_tested" = as.numeric(),
+                                "number_tested" = as.numeric(),
+                                "sensitivity" = as.numeric(),
+                                "specificity" = as.numeric(),
+                                "other_parameter_1" = as.numeric(),
+                                "other_parameter_2" = as.numeric() )
+
+tests_parameters[1,] = c(1, 1, NA, 1, 1, 5, 0.05) # param 1 is number of animals in clinical, param 2 is share of animals in clinical
+tests_parameters$type[1] = "farmer_daily_morbidity"
+tests_parameters[2,] = c(2, 1, NA, 1, 1, 2, 0.035) # param 1 is number of animals in carcass, param 2 is share of animals in carcass
+tests_parameters$type[2] = "farmer_daily_mortality"
+tests_parameters[3,] = c(3, 1, NA, 0.95, 1, NA, NA)
+tests_parameters$type[3] = "vet_visit"
 
 
 

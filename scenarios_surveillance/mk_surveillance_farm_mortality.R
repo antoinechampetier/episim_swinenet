@@ -14,7 +14,7 @@ mk_surveillance<- function(vertex_key, surveillance_parameter){
   
   targeted_farms = vertex_parameters$ID_vertex[ vertex_parameters$type == "farm" ]
   
-  surveillance_schedule[ vertex_key$ID_vertex %in% targeted_farms,] <- 1
+  surveillance_schedule[ vertex_key$ID_vertex %in% targeted_farms,] <- 2
   
   #turning the matrix into a list of tests since it is much more efficient (lots of zeros)
   rownames(surveillance_schedule) <- vertex_key$ID_vertex
@@ -50,22 +50,22 @@ f_detection <-function(vertex_variables,surveillance_schedule_t){
   test_infected_vertex_test_3  <- test_infected_vertex[test_infected_vertex$test_type == 3,  ]
   
   if(nrow(test_infected_vertex_test_1)>0){
-    
+
     output_detection_1 <-  data.frame("ID_vertex" = as.character(),
-                                      "test_type" = as.numeric())
+                                    "test_type" = as.numeric())
     
     
     test_infected_vertex_test_1$pigs_morbid <- rowSums(test_infected_vertex_test_1[,c("clinical_0","clinical_1", "carcass")])
     test_infected_vertex_test_1$total_pigs  <- rowSums(test_infected_vertex_test_1[,c(compartment_list[1:compartment_num-1])])
     test_infected_vertex_test_1$detections  <- 0
     test_infected_vertex_test_1$detections[test_infected_vertex_test_1$pigs_morbid >=  tests_parameters$other_parameter_1[1] |
-                                             test_infected_vertex_test_1$pigs_morbid/test_infected_vertex_test_1$total_pigs >  tests_parameters$other_parameter_2[1] ] <- 1
+                                           test_infected_vertex_test_1$pigs_morbid/test_infected_vertex_test_1$total_pigs >  tests_parameters$other_parameter_2[1] ] <- 1
     
     
     if(nrow(test_infected_vertex_test_1)>0){ # draw the tests only if there are any infected animals selected for testing
       output_detection_1 <- test_infected_vertex_test_1$detections
       output_detection  <- rbind(output_detection,output_detection_1)
-    }
+      }
   }
   
   if(nrow(test_infected_vertex_test_2)>0){

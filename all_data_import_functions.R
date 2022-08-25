@@ -76,8 +76,8 @@ mk_vertex_param <- function(vertex_key, param_data, wildboar_param){
 
 
 
-
-
+#population_file =  paste(relative_path_to_processed_data,"pop_vertex_final.RData",sep="")
+#population_wildboar = paste(relative_path_to_processed_data ,"wildboar_units.Rdata",sep ="")
 mk_vertex_variables <- function(vertex_key, date_start,  compartment_list, population_file, population_wildboar){
   load(population_file)
   load(population_wildboar)
@@ -103,6 +103,7 @@ mk_vertex_variables <- function(vertex_key, date_start,  compartment_list, popul
     init_vertex_variable <- cbind(init_vertex_variable, rep(0,nrow(vertex_key)))
   }
   names(init_vertex_variable)<-c("ID_vertex",compartment_list, "status_infected_pigs","infectiousness")
+  
   init_vertex_variable$susceptible[vertex_parameters$type == "slaughter"]<- 0
   
   return(init_vertex_variable)

@@ -44,7 +44,7 @@ for(t in 1:simulation_steps){
   vertex_variables <- f_transport(vertex_variables, transport_network_edges[transport_network_edges$t_step == t,])
   
   # implement detection based on schedule at time step t and save to output for detection
-  output_run$detections[output_run$t_step==t] <- f_detection(vertex_variables,surveillance_schedule[surveillance_schedule$t_step == t,])
+  output_run$detections[output_run$t_step==t] <- sum(f_detection(vertex_variables,surveillance_schedule[surveillance_schedule$t_step == t,]))
 
   
   # this would need to be changed in order for the detection function to be allowed to change surveillance_schedule for dynamic surveillance strategies

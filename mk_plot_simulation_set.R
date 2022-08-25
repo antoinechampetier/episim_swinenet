@@ -130,9 +130,13 @@ detection_stats <- sim_output %>%  group_by(replication)  %>%  summarize(first_d
 detection_stats <- left_join(detection_stats,sim_output[,c("t_step","prevalence_farm","prevalence_wb_units" , "prevalence_pigs"  ,   "prevalence_wb"  , "replication" )], 
                              by = c("replication"="replication" ,"first_dedect"="t_step"))
 
-png(paste(relative_path_to_output,"/",scenario,"/","hist_detection_times.png",sep=""))
-hist_plot <- hist(detection_stats$first_dedect,breaks = simulation_steps, xlab= "time first detection",xaxp=c(0,simulation_steps,simulation_steps))
-dev.off()
+if (!is.na(sum(detection_stats$first_dedect))){
+  png(paste(relative_path_to_output,"/",scenario,"/","hist_detection_times.png",sep=""))
+  hist_plot <- hist(detection_stats$first_dedect,breaks = simulation_steps, xlab= "time first detection",xaxp=c(0,simulation_steps,simulation_steps))
+  dev.off()
+  
+}
+
 
 
 
@@ -150,6 +154,9 @@ dev.off()
 
 detection_size <- data.frame(sim_output$prevalence_pigs[detection_stats$first_dedect], detection_stats$replication)
 names(detection_size) = c("size_at_detection","replication")
+
+if (!is.na(sum(detection_size$size_at_detection))){
+
 png(paste(relative_path_to_output,"/",scenario,"/","hist_size_first_detection.png",sep=""))
 hist(detection_size$size_at_detection, breaks = 100)
 dev.off()
@@ -178,7 +185,7 @@ print(hist_plot)
 dev.off()
 
 
-
+}
 
 
 

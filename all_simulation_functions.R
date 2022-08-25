@@ -154,10 +154,20 @@ f_population <-function(vertex_variables,vertex_pop_t){
   vertex_variables$susceptible[vertex_parameters$type == "wildboar" & vertex_variables$susceptible > init_vertex_variable$susceptible]  <- 
     init_vertex_variable$susceptible[vertex_parameters$type == "wildboar" & vertex_variables$susceptible > init_vertex_variable$susceptible]
   
+  ## remove carcasses to removed. completely and daily for farms, with slow decay for wildboar (backwards from carcass to latent)
+  carcass_decays  <-  rbinom(nrow(vertex_variables[vertex_parameters$type == "wildboar",]),size=floor(vertex_variables$carcass[vertex_parameters$type == "wildboar"]),carcass_decay_wild_boar)
   
-  ## advance disease stages (backwards from removed to latent)
-  vertex_variables[,compartment_list[compartment_num]] <- vertex_variables[,compartment_list[compartment_num]] + vertex_variables[,compartment_list[compartment_num-1]] # start by adding to removed (from last clinical stage)
-  vertex_variables[,compartment_list[-c(1,2,compartment_num)]] <- vertex_variables[,compartment_list[-c(1,compartment_num-1,compartment_num)]] # move all compartments (except susceptible, latent and removed) one step to the right
+  vertex_variables$removed[vertex_parameters$type == "wildboar"] <-  vertex_variables$removed[vertex_parameters$type == "wildboar"] +  carcass_decays
+  vertex_variables$carcass[vertex_parameters$type == "wildboar"] <-  vertex_variables$carcass[vertex_parameters$type == "wildboar"] -  carcass_decays
+  
+  vertex_variables$removed[vertex_parameters$type == "farm"] <-  vertex_variables$removed[vertex_parameters$type == "farm"] +
+    vertex_variables$carcass[vertex_parameters$type == "farm"]
+  vertex_variables$carcass[vertex_parameters$type == "farm"] <- 0
+  
+  
+  ## advance disease stages (backwards from carcass to latent)
+  vertex_variables[,compartment_list[compartment_num-1]] <- vertex_variables[,compartment_list[compartment_num-1]] + vertex_variables[,compartment_list[compartment_num-2]] # start by adding to carcass (from last clinical stage)
+  vertex_variables[,compartment_list[-c(1,2,compartment_num-1)]] <- vertex_variables[,compartment_list[-c(1,compartment_num-2,compartment_num-1)]] # move all compartments (except susceptible, latent and removed) one step to the right
   vertex_variables[,compartment_list[2]] <- 0 # set latent to zero
   
   return(vertex_variables)
