@@ -21,7 +21,7 @@ output_run <- data.frame(t_step=c(1:simulation_steps),
 
 
 
-output_detection <- data.frame(t_step=1:simulation_steps, detections=rep(NA,simulation_steps))
+
 
 ## GENERATE INDEX CASE(S)####
 
@@ -35,7 +35,8 @@ for(t in 1:simulation_steps){
   vertex_variables[rowSums(vertex_variables[,compartment_list]) <=1,"susceptible" ] = 1     
   # fill in the the prevalence and incidences in the output variable
   output_run[output_run$t_step == t, c(2:7)] <- f_preval_incid(vertex_variables)
-
+  output_infected_id  <- append(output_infected_id, list(rep_number, t, list(vertex_variables$ID_vertex[vertex_variables$status_infected_pigs>0 ])))
+  
   # update the two state variables that are used to calculate infections and prevalence/incidence with correct timing (accounting for transport or population mixing and change effects)
   vertex_variables$status_infected_pigs[vertex_parameters$type != "slaughter"] <- rowSums(vertex_variables[vertex_parameters$type != "slaughter",infected_compartments])  # update the status_infected_pigs variable 
   vertex_variables$infectiousness[vertex_parameters$type != "slaughter"] <- rowSums(sweep(vertex_variables[vertex_parameters$type != "slaughter",compartment_list],2,compartment_infect,"*")) # update the infectiousness (from 0 to 1) of the vertex based on its compartments and weights
@@ -44,10 +45,12 @@ for(t in 1:simulation_steps){
   vertex_variables <- f_transport(vertex_variables, transport_network_edges[transport_network_edges$t_step == t,])
   
   # implement detection based on schedule at time step t and save to output for detection
-  output_run$detections[output_run$t_step==t] <- sum(f_detection(vertex_variables,surveillance_schedule[surveillance_schedule$t_step == t,]))
-
+  detections_full_temp  <-  f_detection(vertex_variables,surveillance_schedule[surveillance_schedule$t_step == t,])
+  detections_unique_temp  <-   unique(detections_full_temp$ID_vertex)
+  output_run$detections[output_run$t_step==t] <- length(detections_unique_temp)
+  output_detected_id  <- append(output_detected_id, list(rep_number, t, list(detections_unique_temp)))
   
-  # this would need to be changed in order for the detection function to be allowed to change surveillance_schedule for dynamic surveillance strategies
+  # the detections_full_temp contains the ids and the test type for the detections and can be used to update the surveillance schedule, for instance to follow up with vet visit etc...
   # if(output_run$detections[output_run$t_step==t] >0){surveillance_schedule  <- surveillance_schedule[t,]}
   
   

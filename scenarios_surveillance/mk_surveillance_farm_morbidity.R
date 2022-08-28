@@ -63,7 +63,7 @@ f_detection <-function(vertex_variables,surveillance_schedule_t){
     
     
     if(nrow(test_infected_vertex_test_1)>0){ # draw the tests only if there are any infected animals selected for testing
-      output_detection_1 <- test_infected_vertex_test_1$detections
+      output_detection_1 <- test_infected_vertex_test_1[test_infected_vertex_test_1$detections > 0, c("ID_vertex", "detections")]
       output_detection  <- rbind(output_detection,output_detection_1)
     }
   }
@@ -82,7 +82,7 @@ f_detection <-function(vertex_variables,surveillance_schedule_t){
     
     
     if(nrow(test_infected_vertex_test_2)>0){ # draw the tests only if there are any infected animals selected for testing
-      output_detection_2 <- test_infected_vertex_test_2$detections
+      output_detection_2 <- test_infected_vertex_test_2[test_infected_vertex_test_2$detections > 0, c("ID_vertex", "detections")]
       output_detection  <- rbind(output_detection,output_detection_2)
     }
   }

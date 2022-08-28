@@ -70,15 +70,16 @@ f_detection <-function(vertex_variables,surveillance_schedule_t){
   
   if(nrow(test_infected_vertex_test_2)>0){
     
-    output_detection_1 <-  data.frame("ID_vertex" = as.character(),
+    output_detection_2 <-  data.frame("ID_vertex" = as.character(),
                                       "test_type" = as.numeric())
     
     
     test_infected_vertex_test_2$pigs_dead <- test_infected_vertex_test_2[,c("carcass")]
     test_infected_vertex_test_2$total_pigs  <- rowSums(test_infected_vertex_test_2[,c(compartment_list[1:compartment_num-1])])
     test_infected_vertex_test_2$detections  <- 0
-    test_infected_vertex_test_2$detections[test_infected_vertex_test_2$pigs_dead >=  tests_parameters$other_parameter_1[2 ] |
-                                             test_infected_vertex_test_2$pigs_morbid/test_infected_vertex_test_2$total_pigs >  tests_parameters$other_parameter_2[2] ] <- 2
+    test_infected_vertex_test_2$detections[test_infected_vertex_test_2$pigs_dead >=  tests_parameters$other_parameter_1[2]] <- 2
+    test_infected_vertex_test_2$detections[test_infected_vertex_test_2$pigs_dead/test_infected_vertex_test_2$total_pigs >  tests_parameters$other_parameter_2[2] ] <- 2
+                                             
     
     
     if(nrow(test_infected_vertex_test_2)>0){ # draw the tests only if there are any infected animals selected for testing

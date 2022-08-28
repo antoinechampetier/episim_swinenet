@@ -52,7 +52,9 @@ for(scenario in list.files(relative_path_to_scenarios)){
                          detections= numeric(),
                          rep_number = numeric()) 
 
-
+    output_infected_id <- c()
+    output_detected_id <- c()
+    
     ## RUN REPLICATIONS ####
     for(rep_number in 1:sim_replications){ 
   

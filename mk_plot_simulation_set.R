@@ -16,6 +16,7 @@ par(mfrow=c(1,1))
 
 ## make the plot for prevalence pigs ####
 output_all_plot <- sim_output[,c("t_step" ,"replication" , "prevalence_pigs", "incidence_pigs" , "prevalence_wb", "incidence_wb")]
+names(output_all_plot)  <- c("t_step" ,"replication" , "Total number of infected pigs","Number of infected pigs at time step","Total number of infected wildboar","Number of infected wildboar at time step" )
 df=melt(output_all_plot,id.vars = c("t_step", "replication"))
 
 #output_dat$t_step <- as.numeric(output_dat$t_step)
@@ -26,12 +27,15 @@ spag = tspag + aes(colour = factor(replication)) + geom_smooth(se=FALSE, colour=
 current_plot <- spag + facet_wrap(~ variable, scales = "free")
 
 
-png(paste(relative_path_to_output,"/",scenario,"/","pigs_simulation.png",sep=""))
+png(paste(relative_path_to_output,"/",scenario,"/","preval_incid_pigs_wildboar.png",sep=""))
 print(current_plot)
 dev.off()
 
 ## make the plot for prevalence farms ####
 output_all_plot <- sim_output[,c("t_step" ,"replication" , "prevalence_farm", "prevalence_wb_units" , "incidence_farm",  "incidence_wb_units" )]
+names(output_all_plot)  <- c("t_step" ,"replication" , "Total number of infected farms","Number of infected farms at time step",
+                             "Total number of infected wildboar units","Number of infected wildboar units at time step" )
+
 df=melt(output_all_plot,id.vars = c("t_step", "replication"))
 
 #output_dat$t_step <- as.numeric(output_dat$t_step)
@@ -41,32 +45,17 @@ spag = tspag + aes(colour = factor(replication)) + geom_smooth(se=FALSE, colour=
 current_plot<- spag + facet_wrap(~ variable, scales = "free")
 
 
-png(paste(relative_path_to_output,"/",scenario,"/","farm_simulation.png",sep=""))
+png(paste(relative_path_to_output,"/",scenario,"/","preval_incid_farm_wildboar.png",sep=""))
 print(current_plot)
 dev.off()
 
 
-## make the plot for detections side to side with prevalence farms ####
-output_all_plot <- sim_output[,c("t_step" ,"replication" , "prevalence_pigs", "incidence_pigs" , "prevalence_wb", "incidence_wb")]
-df=melt(output_all_plot,id.vars = c("t_step", "replication"))
-
-#output_dat$t_step <- as.numeric(output_dat$t_step)
-tspag = ggplot(df, aes(x=t_step, y=value)) + 
-  geom_line() + guides(colour = "none") + xlab("Time steps") 
-spag = tspag + aes(colour = factor(replication)) + geom_smooth(se=FALSE, colour="black", size=1)
-
-current_plot <- spag + facet_wrap(~ variable, scales = "free")
-
-
-png(paste(relative_path_to_output,"/",scenario,"/","pigs_simulation.png",sep=""))
-print(current_plot)
-dev.off()
 
 
 
 ## make the plot for side to side with prevalence farms and pigs####
 output_all_plot <- sim_output[,c("t_step" ,"replication" , "prevalence_pigs", "prevalence_farm" , "prevalence_wb", "prevalence_wb_units")]
-names(output_all_plot) <- c("t_step" ,"replication" , "Number infected pigs", "Number infected farms" , "Number infected wildboars", "Number infected wb units")
+names(output_all_plot) <- c("t_step" ,"replication" , "Total number of infected pigs", "Total number infected of farms" , "Total number of infected wildboars", "Total number infected wildboar units")
 df=melt(output_all_plot,id.vars = c("t_step", "replication"))
 
 
@@ -79,7 +68,7 @@ spag = tspag + aes(colour = factor(replication)) + geom_smooth(se=FALSE, colour=
 current_plot <- spag + facet_wrap(~ variable, scales = "free")
 
 
-png(paste(relative_path_to_output,"/",scenario,"/","farm_pigs_prevalence.png",sep=""))
+png(paste(relative_path_to_output,"/",scenario,"/","prevalence_farm_pigs_wildboar_.png",sep=""))
 print(current_plot)
 dev.off()
 
@@ -87,27 +76,9 @@ dev.off()
 
 
 
-# ## make the plot for side to side with prevalence farms and pigs####
-# output_all_plot <- sim_output[,c("t_step" ,"replication" , "prevalence_pigs", "prevalence_farm" , "prevalence_wb", "prevalence_wb_units")]
-# df=melt(output_all_plot,id.vars = c("t_step", "replication"))
-# 
-# r=1
-# df2=df[df$replication==r,]
-# #output_dat$t_step <- as.numeric(output_dat$t_step)
-# tspag = ggplot(df2, aes(x=t_step, y=value)) + 
-#   geom_line() + guides(colour = "none") + xlab("Time steps") 
-# spag = tspag + aes(colour = factor(replication))  #+geom_smooth(se=FALSE, colour="black", size=1)
-# current_plot <- spag + facet_wrap(~ variable, scales = "free")
-# 
-# print(current_plot)
-# r=r+1
-
-
-
-
 ## make the plot for detections side to side with prevalence pigs/wb ####
-output_all_plot <- sim_output[,c("t_step" ,"replication" , "detections","prevalence_pigs","prevalence_farm")]
-names(output_all_plot)  <- c("t_step" ,"replication" , "Detections","Number of infected pigs","Number of infected farms")
+output_all_plot <- sim_output[,c("t_step" ,"replication" , "detections","prevalence_farm","prevalence_pigs")]
+names(output_all_plot)  <- c("t_step" ,"replication" , "Detections","Total number of infected farms","Total number of infected pigs")
 df=melt(output_all_plot,id.vars = c("t_step", "replication"))
 
 #output_dat$t_step <- as.numeric(output_dat$t_step)
@@ -117,7 +88,7 @@ spag = tspag + aes(colour = factor(replication)) + geom_smooth(se=FALSE, colour=
 
 current_plot1 <- spag + facet_wrap(~ variable, scales = "free")
 
-png(paste(relative_path_to_output,"/",scenario,"/","detections_simulation.png",sep=""))
+png(paste(relative_path_to_output,"/",scenario,"/","detections_prevalence_pigs.png",sep=""))
 print(current_plot1)
 dev.off()
 
@@ -131,83 +102,85 @@ detection_stats <- left_join(detection_stats,sim_output[,c("t_step","prevalence_
                              by = c("replication"="replication" ,"first_dedect"="t_step"))
 
 if (!is.na(sum(detection_stats$first_dedect))){
-  png(paste(relative_path_to_output,"/",scenario,"/","hist_detection_times.png",sep=""))
-  hist_plot <- hist(detection_stats$first_dedect,breaks = simulation_steps, xlab= "time first detection",xaxp=c(0,simulation_steps,simulation_steps))
+  png(paste(relative_path_to_output,"/",scenario,"/","detection_times.png",sep=""))
+  hist_plot <- ggplot(detection_stats, aes(x=first_dedect))+
+    geom_histogram(color="darkblue", fill="lightblue") + xlab("Time at first detection") +
+    geom_vline(aes(xintercept=mean(first_dedect)),
+               color="blue", linetype="dashed", size=1) +
+    geom_vline(aes(xintercept=median(first_dedect)),
+               color="blue", size=1) +
+    xlim(0, max(detection_stats$first_dedect))
+  print(hist_plot)
   dev.off()
+  
+  png(paste(relative_path_to_output,"/",scenario,"/","detection_sizes_pigs.png",sep=""))
+  hist_plot <- ggplot(detection_stats, aes(x=prevalence_pigs))+
+    geom_histogram(color="brown", fill="#E7B800") + xlab("Pigs infected at first detection (mean solid line, median dashed)") +
+    geom_vline(aes(xintercept=mean(prevalence_pigs)),
+               color="blue", size=1) +
+    geom_vline(aes(xintercept=median(prevalence_pigs)),
+               color="blue", linetype="dashed",size=1) +
+    xlim(0, max(detection_stats$prevalence_pigs))
+  print(hist_plot)
+  dev.off()
+  
+  png(paste(relative_path_to_output,"/",scenario,"/","detection_sizes_farms.png",sep=""))
+  hist_plot <- ggplot(detection_stats, aes(x=prevalence_farm))+
+    geom_histogram(color="#C4961A", fill="#FFDB6D") + xlab("Farms infected at first detection (mean solid line, median dashed)") +
+    geom_vline(aes(xintercept=mean(prevalence_farm)),
+               color="blue", size=1) +
+    geom_vline(aes(xintercept=median(prevalence_farm)),
+               color="blue", linetype="dashed",size=1) +
+    xlim(0, max(detection_stats$prevalence_farm))
+  print(hist_plot)
+  dev.off()
+  
+  png(paste(relative_path_to_output,"/",scenario,"/","detection_sizes_wildboars.png",sep=""))
+  hist_plot <- ggplot(detection_stats, aes(x=prevalence_wb))+
+    geom_histogram(color="#C4961A", fill="#FFDB6D") + xlab("Wildboars infected at first detection (mean solid line, median dashed)") +
+    geom_vline(aes(xintercept=mean(prevalence_wb)),
+               color="blue", size=1) +
+    geom_vline(aes(xintercept=median(prevalence_wb)),
+               color="blue", linetype="dashed",size=1) +
+    xlim(0, max(detection_stats$prevalence_wb))
+  print(hist_plot)
+  dev.off()
+  
+  
   
 }
 
 
 
+png(paste(relative_path_to_output,"/",scenario,"/","time_detection_size_outbreak.png",sep=""))
 
-png(paste(relative_path_to_output,"/",scenario,"/","box_plot_detection_times.png",sep=""))
-boxplot  <- ggplot(detection_stats, aes(y=first_dedect)) + 
-  geom_boxplot(fill="slateblue", alpha=0.2) + 
-  theme(axis.text.x=element_blank()) +
-  ylab("time at first detection")
-print(boxplot)
-dev.off()
+current_plot <-  ggplot(detection_stats, aes(x=first_dedect, y=prevalence_farm)) + 
+  geom_point(aes(size=prevalence_pigs), alpha=0.5)+
+  xlab("Time at first detection") +
+  ylab("Number of infected farms at first detection")+
+  labs(size="Number of infected pigs")
 
-
-
-## make size at first detection summaries ####
-
-detection_size <- data.frame(sim_output$prevalence_pigs[detection_stats$first_dedect], detection_stats$replication)
-names(detection_size) = c("size_at_detection","replication")
-
-if (!is.na(sum(detection_size$size_at_detection))){
-
-png(paste(relative_path_to_output,"/",scenario,"/","hist_size_first_detection.png",sep=""))
-hist(detection_size$size_at_detection, breaks = 100)
-dev.off()
-
-
-png(paste(relative_path_to_output,"/",scenario,"/","box_plot_detection_size.png",sep=""))
-boxplot  <- ggplot(detection_size, aes(y=size_at_detection)) + 
-  geom_boxplot(fill="slateblue", alpha=0.2) + 
-  theme(axis.text.x=element_blank()) +
-  ylab("time at first detection")
-print(boxplot)
-dev.off()
-
-
-png(paste(relative_path_to_output,"/",scenario,"/","plot_detection_size_time.png",sep=""))
-plot(detection_size$size_at_detection,detection_stats$first_dedect)
-dev.off()
-
-
-
-df=melt(detection_stats,id.vars = c("replication"))
-hist_plot <- ggplot(df,aes(value)) + geom_histogram() + facet_wrap(~variable, scales = "free")
-
-png(paste(relative_path_to_output,"/",scenario,"/","hist_detection_times_details.png",sep=""))
-print(hist_plot)
-dev.off()
-
-
-}
-
-
-
-## trying better formats for trajectory plots ####
-output_all_plot <- sim_output[,c("t_step" ,"replication","prevalence_pigs","prevalence_farm")]
-
-df=melt(output_all_plot,id.vars = c("t_step", "replication"))
-
-# ensemble average
-ensemble_av <- df %>% group_by(t_step) %>% summarize(Mean = mean(value))
-
-
-
-current_plot <- ggplot(df,aes(t_step,value,group=replication))+
-  geom_line(alpha=0.2) + facet_wrap(~variable, scales = "free") +
-  xlab("Days")
-
-
-png(paste(relative_path_to_output,"/",scenario,"/","prevalence_pigs_farms_grey.png",sep=""))
 print(current_plot)
 dev.off()
 
+
+
+
+png(paste(relative_path_to_output,"/",scenario,"/","pigs_farm_detection_size_outbreak.png",sep=""))
+
+current_plot <-  ggplot(detection_stats, aes(x=prevalence_pigs, y=prevalence_farm)) + 
+  geom_point(aes(size=first_dedect), alpha=0.5)+
+  xlab("Number of infected pigs") +
+  ylab("Number of infected farms at first detection")+
+  labs(size="Time at first detection")
+
+print(current_plot)
+dev.off()
+
+
+
+# ensemble average
+#ensemble_av <- df %>% group_by(t_step) %>% summarize(Mean = mean(value))
 
 
 ## detach reshape2 to avoid conflicts with other packages ####
@@ -217,6 +190,13 @@ detach("package:reshape2")
 
 
 
+#boxplot  <- ggplot(detection_stats, aes(x=first_dedect)) + 
+#  geom_boxplot(fill="slateblue", alpha=0.2, width = .5) + 
+#  xlab("Time at first detection") +
+#  xlim(0, max(detection_stats$first_dedect))
+#library(ggpubr)
+
+#ggarrange(hist_plot, boxplot, ncol = 1, nrow = 2)
 
 
 

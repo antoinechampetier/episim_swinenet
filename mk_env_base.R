@@ -6,12 +6,12 @@
 #################################################################################################
 
 ### SET REPLICATION PARAMETERS ####
-sim_replications = 300
+sim_replications = 5
 
 ### SET SIMULATION TIMING PARAMETERS ####
 #time_step = "days" 
-date_start = "2019-01-02" 
-simulation_steps = 300 ## number of time steps the simulation is run (here days).
+date_start = "2018-01-02" 
+simulation_steps = 50 ## number of time steps the simulation is run (here days).
 
 
 ### SET DISEASE PARAMETERS ####
@@ -70,10 +70,10 @@ source("all_simulation_functions.R")
 ### Defining index case  ####
 # Un-comment one of the following for non-default index case
 #source("scenarios_index_case/mk_index_case_italy_border.R")
-#source("scenarios_index_case/mk_index_case_labor.R")
-source("scenarios_index_case/mk_index_case_rest_area.R")
+source("scenarios_index_case/mk_index_case_labor.R")
+#source("scenarios_index_case/mk_index_case_rest_area.R")
 index_case_parameter = 20 # used to set the probabilities of index cases from the vertex property for the scenario
-index_case_number = 100 # the maximum number of units infected as index case. the probabilities of index case are still used. See f_inoculate in all_simulaiton_functions.R
+index_case_number = 20 # the maximum number of units infected as index case. the probabilities of index case are still used. See f_inoculate in all_simulaiton_functions.R
 
 
 
