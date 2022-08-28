@@ -6,12 +6,12 @@
 #################################################################################################
 
 ### SET REPLICATION PARAMETERS ####
-sim_replications = 5
+sim_replications = 20
 
 ### SET SIMULATION TIMING PARAMETERS ####
 #time_step = "days" 
 date_start = "2018-01-02" 
-simulation_steps = 50 ## number of time steps the simulation is run (here days).
+simulation_steps = 200 ## number of time steps the simulation is run (here days).
 
 
 ### SET DISEASE PARAMETERS ####
@@ -26,11 +26,11 @@ infected_compartments = c(compartment_list[2:(compartment_num-2)]) # select the 
 carcass_decay_wild_boar = 0.1 # probability of each carcass being removed per day in a binomial draw
 
 
-probas_infections_param <- c("self" = 0.9,
+probas_infections_param <- c("self" = 0.78,
                             "p2p"= 0.2,
                             "f"= 0.1,
-                            "t"= 0.1,
-                            "v"= 0.02,
+                            "t"= 0.01,
+                            "v"= 0.005,
                             "s" = 0.2 )
 
 space_cutoff = 2000 # cutoff distance for space contacts.
@@ -79,10 +79,9 @@ index_case_number = 20 # the maximum number of units infected as index case. the
 
 
 ### Defining non default surveillance ####
-# Un-comment one of the following for non-default surveillance
-source("scenarios_surveillance/mk_surveillance_farm_morbidity.R")
-#source("scenarios_surveillance/mk_surveillance_farm_mortality.R")
-surveillance_parameter = 0.0500 # for random is it the share of vertices tested each time period.
+#source("scenarios_surveillance/mk_surveillance_farm_morbidity_late.R")
+#source("scenarios_surveillance/mk_surveillance_farm_morbidity_early.R")
+surveillance_parameter = 2 # 1 is for daily morbidity surveillance, 2 for daily mortality surveillance
 
 # Parameters for the tests of type 1 and 2: 
 
@@ -96,7 +95,7 @@ tests_parameters  <- data.frame("type" = as.character(),
 
 tests_parameters[1,] = c(1, 1, NA, 1, 1, 5, 0.05) # param 1 is number of animals in clinical, param 2 is share of animals in clinical
 tests_parameters$type[1] = "farmer_daily_morbidity"
-tests_parameters[2,] = c(2, 1, NA, 1, 1, 2, 0.035) # param 1 is number of animals in carcass, param 2 is share of animals in carcass
+tests_parameters[2,] = c(2, 1, NA, 1, 1, 5, 0.035) # param 1 is number of animals in carcass, param 2 is share of animals in carcass
 tests_parameters$type[2] = "farmer_daily_mortality"
 tests_parameters[3,] = c(3, 1, NA, 0.95, 1, NA, NA)
 tests_parameters$type[3] = "vet_visit"

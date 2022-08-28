@@ -32,7 +32,7 @@ print(current_plot)
 dev.off()
 
 ## make the plot for prevalence farms ####
-output_all_plot <- sim_output[,c("t_step" ,"replication" , "prevalence_farm", "prevalence_wb_units" , "incidence_farm",  "incidence_wb_units" )]
+output_all_plot <- sim_output[,c("t_step" ,"replication" , "prevalence_farm", "incidence_farm", "prevalence_wb_units" ,  "incidence_wb_units" )]
 names(output_all_plot)  <- c("t_step" ,"replication" , "Total number of infected farms","Number of infected farms at time step",
                              "Total number of infected wildboar units","Number of infected wildboar units at time step" )
 
@@ -146,36 +146,36 @@ if (!is.na(sum(detection_stats$first_dedect))){
   print(hist_plot)
   dev.off()
   
+  png(paste(relative_path_to_output,"/",scenario,"/","time_detection_size_outbreak.png",sep=""))
   
+  current_plot <-  ggplot(detection_stats, aes(x=first_dedect, y=prevalence_farm)) + 
+    geom_point(aes(size=prevalence_pigs), alpha=0.5)+
+    xlab("Time at first detection") +
+    ylab("Number of infected farms at first detection")+
+    labs(size="Number of infected pigs")
+  
+  print(current_plot)
+  dev.off()
+  
+  
+  
+  
+  png(paste(relative_path_to_output,"/",scenario,"/","pigs_farm_detection_size_outbreak.png",sep=""))
+  
+  current_plot <-  ggplot(detection_stats, aes(x=prevalence_pigs, y=prevalence_farm)) + 
+    geom_point(aes(size=first_dedect), alpha=0.5)+
+    xlab("Number of infected pigs") +
+    ylab("Number of infected farms at first detection")+
+    labs(size="Time at first detection")
+  
+  print(current_plot)
+  dev.off()
   
 }
 
 
 
-png(paste(relative_path_to_output,"/",scenario,"/","time_detection_size_outbreak.png",sep=""))
 
-current_plot <-  ggplot(detection_stats, aes(x=first_dedect, y=prevalence_farm)) + 
-  geom_point(aes(size=prevalence_pigs), alpha=0.5)+
-  xlab("Time at first detection") +
-  ylab("Number of infected farms at first detection")+
-  labs(size="Number of infected pigs")
-
-print(current_plot)
-dev.off()
-
-
-
-
-png(paste(relative_path_to_output,"/",scenario,"/","pigs_farm_detection_size_outbreak.png",sep=""))
-
-current_plot <-  ggplot(detection_stats, aes(x=prevalence_pigs, y=prevalence_farm)) + 
-  geom_point(aes(size=first_dedect), alpha=0.5)+
-  xlab("Number of infected pigs") +
-  ylab("Number of infected farms at first detection")+
-  labs(size="Time at first detection")
-
-print(current_plot)
-dev.off()
 
 
 

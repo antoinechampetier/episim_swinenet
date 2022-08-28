@@ -256,29 +256,52 @@ mk_contact_network <- function(vertex_key, date_start,  simulation_steps, space_
 }
 
 
+# old surveillance function left for reference if random tested needs to be added
+# mk_surveillance<- function(vertex_key, surveillance_parameter){
+#   
+#   surveillance_schedule <- matrix(0,nrow = nrow(vertex_key), ncol = simulation_steps) 
+#   surveillance_density = surveillance_parameter # share of nodes tested each day
+#   for (t_step in 1:simulation_steps){
+#     surveillance_schedule[sample.int(nrow(vertex_key),round(nrow(vertex_key)*surveillance_density/2,0),replace = FALSE) ,t_step] <- 1
+#   }
+#   for (t_step in 1:simulation_steps){
+#     surveillance_schedule[sample.int(nrow(vertex_key),round(nrow(vertex_key)*surveillance_density/2,0),replace = FALSE) ,t_step] <- 2
+#   }
+#   
+#   #turning the matrix into a list of tests since it is much more efficient (lots of zeros)
+#   rownames(surveillance_schedule) <- vertex_key$ID_vertex
+#   colnames(surveillance_schedule) <- c(1:simulation_steps)
+#   surveillance_schedule<- as.data.frame(as.table(surveillance_schedule))
+#   names(surveillance_schedule) <- c("ID_vertex","t_step","test_type")
+#   surveillance_schedule <-  surveillance_schedule[surveillance_schedule$test_type > 0 ,] 
+#   
+#   surveillance_schedule$ID_vertex <- as.integer(as.character(surveillance_schedule$ID_vertex))
+#   surveillance_schedule$t_step <- as.integer(as.character(surveillance_schedule$t_step))
+#   return(surveillance_schedule)
+# }
+
+
 
 mk_surveillance<- function(vertex_key, surveillance_parameter){
   
   surveillance_schedule <- matrix(0,nrow = nrow(vertex_key), ncol = simulation_steps) 
-  surveillance_density = surveillance_parameter # share of nodes tested each day
-  for (t_step in 1:simulation_steps){
-    surveillance_schedule[sample.int(nrow(vertex_key),round(nrow(vertex_key)*surveillance_density/2,0),replace = FALSE) ,t_step] <- 1
-  }
-  for (t_step in 1:simulation_steps){
-    surveillance_schedule[sample.int(nrow(vertex_key),round(nrow(vertex_key)*surveillance_density/2,0),replace = FALSE) ,t_step] <- 2
-  }
+  
+  targeted_farms = vertex_parameters$ID_vertex[ vertex_parameters$type == "farm" ]
+  
+  surveillance_schedule[ vertex_key$ID_vertex %in% targeted_farms,] <- surveillance_parameter
   
   #turning the matrix into a list of tests since it is much more efficient (lots of zeros)
   rownames(surveillance_schedule) <- vertex_key$ID_vertex
   colnames(surveillance_schedule) <- c(1:simulation_steps)
   surveillance_schedule<- as.data.frame(as.table(surveillance_schedule))
   names(surveillance_schedule) <- c("ID_vertex","t_step","test_type")
-  surveillance_schedule <-  surveillance_schedule[surveillance_schedule$test_type > 0 ,] 
+  surveillance_schedule <-  surveillance_schedule[surveillance_schedule$test > 0 ,] 
   
   surveillance_schedule$ID_vertex <- as.integer(as.character(surveillance_schedule$ID_vertex))
   surveillance_schedule$t_step <- as.integer(as.character(surveillance_schedule$t_step))
   return(surveillance_schedule)
 }
+
 
 
 
