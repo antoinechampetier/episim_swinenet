@@ -5,6 +5,47 @@ par(mfrow=c(1,1))
 
 
 
+
+
+#* fix to make cummulative instead of instantaneous prevalence graphs ####
+cummutalive_graphs = 1
+if(cummutalive_graphs == 1){
+  
+  sim_output$cummul_farm <- 0
+  sim_output$cummul_pig <- 0
+  sim_output$cummul_wbunit<- 0
+  sim_output$cummul_wb<- 0
+  
+  for(rep in 1:max(sim_output$replication)){
+    sim_output$cummul_farm[sim_output$t_step == 1 & sim_output$replication == rep ] <-  sim_output$prevalence_farm[sim_output$t_step == 1 & sim_output$replication == rep]
+    sim_output$cummul_pig[sim_output$t_step == 1 & sim_output$replication == rep ] <-  sim_output$prevalence_pigs[sim_output$t_step == 1 & sim_output$replication == rep]
+    sim_output$cummul_wbunit[sim_output$t_step == 1 & sim_output$replication == rep ] <-  sim_output$prevalence_wb_units[sim_output$t_step == 1 & sim_output$replication == rep]
+    sim_output$cummul_wb[sim_output$t_step == 1 & sim_output$replication == rep ] <-  sim_output$prevalence_wb[sim_output$t_step == 1 & sim_output$replication == rep]
+    
+    for(t in 2:max(sim_output$t_step)){
+      sim_output$cummul_farm[sim_output$t_step == t & sim_output$replication == rep] <- sim_output$cummul_farm[sim_output$t_step == t-1 & sim_output$replication == rep] +
+        sim_output$incidence_farm[sim_output$t_step == t & sim_output$replication == rep]
+      sim_output$cummul_pig[sim_output$t_step == t & sim_output$replication == rep] <- sim_output$cummul_pig[sim_output$t_step == t-1 & sim_output$replication == rep] +
+        sim_output$incidence_pigs[sim_output$t_step == t & sim_output$replication == rep]
+      
+      sim_output$cummul_wbunit[sim_output$t_step == t & sim_output$replication == rep] <- sim_output$cummul_wbunit[sim_output$t_step == t-1 & sim_output$replication == rep] +
+        sim_output$prevalence_wb_units[sim_output$t_step == t & sim_output$replication == rep]
+      sim_output$cummul_wb[sim_output$t_step == t & sim_output$replication == rep] <- sim_output$cummul_wb[sim_output$t_step == t-1 & sim_output$replication == rep] +
+        sim_output$incidence_wb[sim_output$t_step == t & sim_output$replication == rep]
+    }
+  }
+  
+  check = sim_output[, c("t_step", "replication", "incidence_farm", "cummul_farm", "prevalence_farm")]
+  
+  sim_output$prevalence_farm <- sim_output$cummul_farm
+  sim_output$prevalence_wb_units <- sim_output$cummul_wbunit
+  sim_output$prevalence_pigs <- sim_output$cummul_pig
+  sim_output$prevalence_wb <- sim_output$cummul_wb
+  
+}
+
+
+
 ## make the plot for prevalence pigs ####
 output_all_plot <- sim_output[,c("t_step" ,"replication" , "prevalence_pigs", "incidence_pigs" , "prevalence_wb", "incidence_wb")]
 names(output_all_plot)  <- c("t_step" ,"replication" , "Total number of infected pigs","Number of infected pigs at time step","Total number of infected wildboar","Number of infected wildboar at time step" )
@@ -209,6 +250,12 @@ current_plot <-  ggplot(cost_delay_average, aes(x=delay, y=prevalence_farm)) +
 
 print(current_plot)
 dev.off()
+
+
+
+
+
+
 
 
 
