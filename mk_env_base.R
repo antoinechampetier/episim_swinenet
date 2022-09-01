@@ -81,7 +81,7 @@ index_case_number = 20 # the maximum number of units infected as index case. the
 ### Defining non default surveillance ####
 #source("scenarios_surveillance/mk_surveillance_farm_morbidity_late.R")
 #source("scenarios_surveillance/mk_surveillance_farm_morbidity_early.R")
-surveillance_parameter = 2 # 1 is for daily morbidity surveillance, 2 for daily mortality surveillance
+surveillance_parameter = 1 # 1 is for daily morbidity surveillance, 2 for daily mortality surveillance
 
 # Parameters for the tests of type 1 and 2: 
 
@@ -93,9 +93,9 @@ tests_parameters  <- data.frame("type" = as.character(),
                                 "other_parameter_1" = as.numeric(),
                                 "other_parameter_2" = as.numeric() )
 
-tests_parameters[1,] = c(1, 1, NA, 1, 1, 5, 0.05) # param 1 is number of animals in clinical, param 2 is share of animals in clinical
+tests_parameters[1,] = c(1, 0.9, NA, 0.9, NA, 10, 0.05) # param 1 is number of animals in clinical, param 2 is share of animals in clinical
 tests_parameters$type[1] = "farmer_daily_morbidity"
-tests_parameters[2,] = c(2, 1, NA, 1, 1, 5, 0.035) # param 1 is number of animals in carcass, param 2 is share of animals in carcass
+tests_parameters[2,] = c(2, 1, NA, 0.9, NA, 5, 0.035) # param 1 is number of animals in carcass, param 2 is share of animals in carcass
 tests_parameters$type[2] = "farmer_daily_mortality"
 tests_parameters[3,] = c(3, 1, NA, 0.95, 1, NA, NA)
 tests_parameters$type[3] = "vet_visit"

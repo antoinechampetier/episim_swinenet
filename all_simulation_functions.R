@@ -159,9 +159,19 @@ f_detection <-function(vertex_variables,surveillance_schedule_t){
     
     test_infected_vertex_test_1$pigs_morbid <- rowSums(test_infected_vertex_test_1[,c("clinical_0","clinical_1", "carcass")])
     test_infected_vertex_test_1$total_pigs  <- rowSums(test_infected_vertex_test_1[,c(compartment_list[1:compartment_num-1])])
+    test_infected_vertex_test_1$tested_pigs   <- tests_parameters$share_tested[1]*test_infected_vertex_test_1$total_pigs
+    
+    
+    test_infected_vertex_test_1$infected_tested_pigs = with(test_infected_vertex_test_1,  ## drawing the pigs tested among all the pigs present and only count the ones that are infected
+                                                     sapply(1:nrow(test_infected_vertex_test_1), 
+                                                            function(i) sum(sample(test_infected_vertex_test_1$total_pigs[i], 
+                                                                                   test_infected_vertex_test_1$tested_pigs[i], 
+                                                                                   replace = FALSE) <= test_infected_vertex_test_1$pigs_morbid[i])))
+    
+    
     test_infected_vertex_test_1$detections  <- 0
-    test_infected_vertex_test_1$detections[test_infected_vertex_test_1$pigs_morbid >=  tests_parameters$other_parameter_1[1] |
-                                             test_infected_vertex_test_1$pigs_morbid/test_infected_vertex_test_1$total_pigs >  tests_parameters$other_parameter_2[1] ] <- 1
+    test_infected_vertex_test_1$detections[test_infected_vertex_test_1$infected_tested_pigs >=  tests_parameters$other_parameter_1[1] |
+                                             test_infected_vertex_test_1$infected_tested_pigs/test_infected_vertex_test_1$total_pigs >  tests_parameters$other_parameter_2[1] ] <- 1
     
     
     if(nrow(test_infected_vertex_test_1)>0){ # draw the tests only if there are any infected animals selected for testing
@@ -178,9 +188,20 @@ f_detection <-function(vertex_variables,surveillance_schedule_t){
     
     test_infected_vertex_test_2$pigs_dead <- test_infected_vertex_test_2[,c("carcass")]
     test_infected_vertex_test_2$total_pigs  <- rowSums(test_infected_vertex_test_2[,c(compartment_list[1:compartment_num-1])])
+    
+    test_infected_vertex_test_2$tested_pigs   <- tests_parameters$share_tested[2]*test_infected_vertex_test_2$total_pigs
+    
+    
+    test_infected_vertex_test_2$dead_tested_pigs = with(test_infected_vertex_test_2,  ## drawing the pigs tested among all the pigs present and only count the ones that are infected
+                                                            sapply(1:nrow(test_infected_vertex_test_2), 
+                                                                   function(i) sum(sample(test_infected_vertex_test_2$total_pigs[i], 
+                                                                                          test_infected_vertex_test_2$tested_pigs[i], 
+                                                                                          replace = FALSE) <= test_infected_vertex_test_2$pigs_dead[i])))
+    
+    
     test_infected_vertex_test_2$detections  <- 0
-    test_infected_vertex_test_2$detections[test_infected_vertex_test_2$pigs_dead >=  tests_parameters$other_parameter_1[2] |
-                                             test_infected_vertex_test_2$pigs_dead/test_infected_vertex_test_2$total_pigs >  tests_parameters$other_parameter_2[2] ] <- 2
+    test_infected_vertex_test_2$detections[test_infected_vertex_test_2$dead_tested_pigs >=  tests_parameters$other_parameter_1[2] |
+                                             test_infected_vertex_test_2$dead_tested_pigs/test_infected_vertex_test_2$total_pigs >  tests_parameters$other_parameter_2[2] ] <- 2
     
     
     
