@@ -23,6 +23,7 @@ suppressMessages(library(tidyverse))
 suppressMessages(library(ggplot2))
 suppressMessages(library(matrixStats))
 suppressMessages(library(lubridate))
+suppressMessages(library(reshape2))
 
 
 ## PRE-PROCESSING SCRIPTS (not run every time)  ####
