@@ -23,7 +23,7 @@ suppressMessages(library(tidyverse))
 suppressMessages(library(ggplot2))
 suppressMessages(library(matrixStats))
 suppressMessages(library(lubridate))
-
+suppressMessages(library(reshape2))
 
 ## PRE-PROCESSING SCRIPTS (not run every time)  ####
 # source( "pre_process_import_source_AGIS_TVD_trader.R" )

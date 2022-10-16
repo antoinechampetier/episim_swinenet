@@ -1,5 +1,5 @@
 ## Some rough plotting of the simulations to give idea of variation across simulations
-library(reshape2)
+
 par(mfrow=c(1,1))
 
 
