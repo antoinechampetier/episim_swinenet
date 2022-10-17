@@ -9,7 +9,6 @@
 sim_replications = 20
 
 ### SET SIMULATION TIMING PARAMETERS ####
-time_step = "days" ## remove from here later?
 date_start = "2019-01-01" ## applied to anonymized TVD data for this test environment
 simulation_steps = 50 ## number of time steps the simulation is run (here days).
 
@@ -22,11 +21,6 @@ compartment_infect = c(0,0,0.5,1,0) # this is the weight of each compartment in 
 compartment_num = length(compartment_list)
 infected_compartments = c(compartment_list[3:compartment_num-1]) # select the compartments that count as infected for incidence and prevalence
 
-transition_proba.farm= c(0,rep(1,compartment_num-2),0)
-transition_proba.wildboar=c(0,rep(1,compartment_num-2),0)
-transition_proba = list("farm" = transition_proba.farm, "wildboar" = transition_proba.wildboar)
-
-
 probas_infections_param <- c("self" = 0.9,
                             "p2p"= 0.2,
                             "f"= 0.1,
@@ -38,13 +32,13 @@ space_cutoff = 2000 # cutoff distance for space contacts.
 distance_param_haltung = 200 # distance-equivalent Haltings form step (e.g. with distance_param = 200, Haltungsform 4 is equivalent to 200 meters, 3 like 400, 2 like 600, )
 distance_param_wb_to_wb = 200 # distance-equivalent for wild boards next to each other
 
-resimul_tours = FALSE # to re'simulate the sequence of tours (transport and vet)
+resimul_tours = FALSE # to re-simulate the sequence of tours (transport and vet)
 
 
 
 
-### LOAD DATA IMPORT FUNCTIONS ####
-source("all_data_import_functions.R")
+### LOAD DATA IMPORT FUNCTIONS #####
+source("all_data_import_functions.R") # most of them are not used in this template version since data is generated
 # Default functions present in "all_data_import_functions.R"
 # mk_vertex_key
 # mk_vertex_param
@@ -89,53 +83,67 @@ source("all_simulation_functions.R")
 
 
 
-### RUN DATA IMPORT FUNCTIONS FROM PRE-PROCESSED DATA ####
-relative_path_to_processed_data = "../epi_data/processed/"
-# The reference lists are used get AGIS, TVD and Swinenet_ID correspondences
-load(paste(relative_path_to_processed_data,"reference_list_swinenet_AGIS_TVD_ids.RData",sep=""))
-load(paste(relative_path_to_processed_data,"id_reference_flat_AGIS.RData",sep ="" ))
-load(paste(relative_path_to_processed_data,"id_reference_flat_TVD.RData",sep ="" ))
 
 
-vertex_key <- mk_vertex_key(date_start, simulation_steps, paste(relative_path_to_processed_data,"activity_dates_final.RData",sep=""))
+### Import anonymized TVD data ####
+tranport_data <- read.csv("pseudo_tvd19_entry.csv")
 
-# old fix, check if needed..
-# vertex_key  <- vertex_key[ vertex_key$ID_vertex != 32273,]  
+### Select period for simulation ####
+tranport_data$date <- ymd(tranport_data$Event_Date)
+tranport_data <- tranport_data[tranport_data$date >= ymd(date_start) & tranport_data$date <= ymd(date_start) + days(simulation_steps), ]
 
+### Generate list of ID for vertices from what is in the transport data ####
+sources_list <- unique(tranport_data$ID_ANH_Source)
+destinations_list <- unique(tranport_data$ID_ANH_Dest)
+vertex_list <- unique(c(sources_list, destinations_list))
 
-
-vertex_parameters <- mk_vertex_param(vertex_key, 
-                                     paste(relative_path_to_processed_data,"parameters_all_final.RData",sep ="" ),
-                                     paste(relative_path_to_processed_data,"wildboar_units.Rdata",sep ="" ))
-
-vertex_pop <- mk_vertex_pop(vertex_key, date_start, simulation_steps, paste(relative_path_to_processed_data,"pop_change_vertex_final.RData",sep=""))
-
-init_vertex_variable <- mk_vertex_variables(vertex_key, 
-                                            date_start, 
-                                            compartment_list, 
-                                            paste(relative_path_to_processed_data,"pop_vertex_final.RData",sep=""),
-                                            paste(relative_path_to_processed_data ,"wildboar_units.Rdata",sep =""))
-
-
-transport_network_edges <- mk_transport(paste(relative_path_to_processed_data ,"TVD_edge_swinenet.RData",sep =""),vertex_key,date_start,simulation_steps )
+### Generating characteristics for farms (not all required) ####
+vertex_parameters <- data.frame("ID_vertex" = c(1:(length(vertex_list))),"TVD_ID" = vertex_list)
+vertex_parameters$type <- "farm"
+vertex_parameters$haltungsform <- sample(c(1,2,3,4),nrow(vertex_parameters), replace = TRUE)
+vertex_parameters$farm_type_ML <- sample(c("Breed_repl","Ring_ins","Fat_lfreq" ,"Breed_norepl", "Nucleus","Ring_farr","Breed_10kg","Multiplier" ,"Fat_10kg" , "Fat_hfreq",""),nrow(vertex_parameters), replace = TRUE)
+vertex_parameters$gemeinde <- sample(c(1:1000),nrow(vertex_parameters), replace = TRUE)
+rm(destinations_list, vertex_list, sources_list)
 
 
-
-contact_network_edges<- mk_contact_network(vertex_key,
-                                           date_start,
-                                           simulation_steps,
-                                           space_cutoff,
-                                           distance_param_haltung,
-                                           distance_param_wb_to_wb,
-                                           paste(relative_path_to_processed_data,"spatial_data_final.RData",sep=""),
-                                           paste(relative_path_to_processed_data,"tour_TVD_final.RData",sep=""),
-                                           paste(relative_path_to_processed_data,"tour_vet_final.RData",sep=""),
-                                           resimul_tours)
+###  Building a parameter data frame for the wild boar units  ####
+nb_wb <- 500 # number of wild boar units
+vertex_wb <- data.frame("ID_vertex" = c(90000:(90000+nb_wb-1)),
+                        "TVD_ID" = rep(NA,nb_wb),
+                        "type" =   rep("wildboar",nb_wb),
+                        "haltungsform"  = rep(NA,nb_wb),
+                        "farm_type_ML" = rep(NA,nb_wb),
+                        "gemeinde" = sample(c(1:900),nb_wb, replace = TRUE))  ## here we are only drawing from 900 Gemeinde which means that there will be up to 100 Gemeinde with farms and no wild boar
 
 
+###  Combining all vertex parameters and creating a key of vertices ####
+vertex_parameters <- rbind(vertex_parameters, vertex_wb)
+  
+vertex_key <- data.frame(ID_vertex = vertex_parameters$ID_vertex)
+rm(vertex_wb, nb_wb)
+
+###  Generate the changes in populations at each time step for each vertex ####
+vertex_pop <- matrix(runif((simulation_steps+1)*nrow(vertex_key),min = -2, max = 10), nrow = simulation_steps+1, ncol = nrow(vertex_key))
+
+
+
+
+###  Generate the variables for compartments for each vertex and initialize susceptible to starting population ####
+init_vertex_variable <- data.frame("ID_vertex" = vertex_key$ID_vertex, 
+                                   "susceptible" = runif(nrow(vertex_key),min = 100, max = 3000))
+for(comp in 1:(compartment_num+1)){
+  init_vertex_variable <- cbind(init_vertex_variable, rep(0,nrow(vertex_key)))
+}
+names(init_vertex_variable)<-c("ID_vertex",compartment_list, "status_infected_pigs","infectiousness")
+
+
+
+###  Generate the variables for compartments for each vertex and initialize susceptible to starting population ####
+transport_network_edges <- mk_transport(paste(relative_path_to_data,"pseudo_tvd19_entry.csv",sep=""),vertex_key,date_start)
+contact_network_edges<- mk_contact_network(vertex_key,transport_network_edges)
 surveillance_schedule <- mk_surveillance(vertex_key, surveillance_parameter, surveillance_policy)
-
 index_case_probabilities <- mk_index_case(vertex_key,index_case_scenario, index_case_parameter)
+
 
 
 

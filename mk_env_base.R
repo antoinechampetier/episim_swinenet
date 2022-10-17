@@ -9,7 +9,6 @@
 sim_replications = 20
 
 ### SET SIMULATION TIMING PARAMETERS ####
-time_step = "days" ## remove from here later?
 date_start = "2019-05-01" ## applied to anonymized TVD data for this test environment
 simulation_steps = 200 ## number of time steps the simulation is run (here days).
 
