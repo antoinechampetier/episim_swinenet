@@ -138,11 +138,61 @@ names(init_vertex_variable)<-c("ID_vertex",compartment_list, "status_infected_pi
 
 
 
-###  Generate the variables for compartments for each vertex and initialize susceptible to starting population ####
-transport_network_edges <- mk_transport(paste(relative_path_to_data,"pseudo_tvd19_entry.csv",sep=""),vertex_key,date_start)
-contact_network_edges<- mk_contact_network(vertex_key,transport_network_edges)
+###  Extract the transport edge list from the anonymized data ####
+tranport_data$t_step <- as.numeric(difftime(tranport_data$date , ymd(date_start),units = "days"))
+tranport_data <- left_join(tranport_data, vertex_parameters[, c("ID_vertex"  ,  "TVD_ID" )], by  = c( "ID_ANH_Dest" = "TVD_ID"))
+tranport_data <- left_join(tranport_data, vertex_parameters[, c("ID_vertex"  ,  "TVD_ID" )], by  = c( "ID_ANH_Source" = "TVD_ID"))
+
+transport_network_edges <- tranport_data[, c("t_step", "N_Pigs", "ID_vertex.x","ID_vertex.y") ]
+names(transport_network_edges) = c( "t_step" , "n_pigs","ID_vertex_source", "ID_vertex_dest")
+
+
+
+###  Generate contacts ####
+# note that this a simplified version and the contacts are not consistent with for space and transport logic
+density_space <- 0.1
+edge_num <- (density_space*nrow(vertex_key))^2
+contact_network_edges <- data.frame("ID_vertex_source" = sample(vertex_key$ID_vertex, edge_num, replace = TRUE),
+                                   "ID_vertex_dest" = sample(vertex_key$ID_vertex, edge_num, replace = TRUE),
+                                   "t_step" = rep("Inf",edge_num),
+                                   "n_susceptibles" = rep(NA,edge_num),
+                                   "infectiousness_factor" = runif(edge_num, min = 1, max = 2000),
+                                   "contact_type" = rep("s",edge_num))
+density_vet<- 0.01
+edge_num <- (density_vet*nrow(vertex_key))^2
+contact_network_edges_vet <- data.frame("ID_vertex_source" = sample(vertex_key$ID_vertex, edge_num, replace = TRUE),
+                                   "ID_vertex_dest" = sample(vertex_key$ID_vertex, edge_num, replace = TRUE),
+                                   "t_step" = sample( 1:simulation_steps, edge_num, replace = TRUE ),
+                                   "n_susceptibles" = rep(NA,edge_num),
+                                   "infectiousness_factor" = rep(NA,edge_num),
+                                   "contact_type" = rep("v",edge_num))
+
+edge_num <- nrow(tranport_data)*10
+contact_network_edges_tours<- data.frame("ID_vertex_source" = sample(vertex_key$ID_vertex, edge_num, replace = TRUE),
+                                        "ID_vertex_dest" = sample(vertex_key$ID_vertex, edge_num, replace = TRUE),
+                                        "t_step" = sample( 1:simulation_steps, edge_num, replace = TRUE ),
+                                        "n_susceptibles" = sample( 1:max(tranport_data$N_Pigs ), edge_num, replace = TRUE ),
+                                        "infectiousness_factor" = rep(NA,edge_num),
+                                        "contact_type" = sample( c( "t","f" ,"p2p" ), edge_num, replace = TRUE ))
+
+    
+contact_network_edges <- rbind(contact_network_edges,contact_network_edges_vet)
+contact_network_edges <- rbind(contact_network_edges,contact_network_edges_tours)
+
+# given the brute force used in generating the contacts, we remove at least the edges where the destination and source are the same
+contact_network_edges <- contact_network_edges[contact_network_edges$ID_vertex_source != contact_network_edges$ID_vertex_dest,]
+
+
+###  Generate contacts ####
 surveillance_schedule <- mk_surveillance(vertex_key, surveillance_parameter, surveillance_policy)
-index_case_probabilities <- mk_index_case(vertex_key,index_case_scenario, index_case_parameter)
+
+
+
+
+
+###  Generate a random probability of being index case ####
+index_case_probabilities <- data.frame("ID_vertex" =  vertex_key$ID_vertex,
+                                        "probability" = runif(nrow(vertex_key), min = 0, max = 1)) 
 
 
 
