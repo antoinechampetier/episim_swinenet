@@ -195,7 +195,7 @@ index_case_probabilities <- data.frame("ID_vertex" =  vertex_key$ID_vertex,
                                         "probability" = runif(nrow(vertex_key), min = 0, max = 1)) 
 
 
-
+index_case_probabilities <- mk_index_case(vertex_key,index_case_scenario, index_case_parameter)
 
 
 

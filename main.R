@@ -1,8 +1,8 @@
 #######################################
-#' @title Main Simulation development module  SWINENET
+#' @title Main Simulation module  SWINENET
 #' @author : Antoine Champetier
 #' @date : 21.12.2021
-#' @description: designed to check run of simulation from final data and variable formats
+#' @description: designed to check run of simulation from scenario files
 #######################################
 
 
