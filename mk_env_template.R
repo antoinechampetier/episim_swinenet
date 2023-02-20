@@ -10,7 +10,7 @@ sim_replications = 20
 
 ### SET SIMULATION TIMING PARAMETERS ####
 date_start = "2019-01-01" ## applied to anonymized TVD data for this test environment
-simulation_steps = 50 ## number of time steps the simulation is run (here days).
+simulation_steps = 10 ## number of time steps the simulation is run (here days).
 
 
 ### SET DISEASE PARAMETERS ####

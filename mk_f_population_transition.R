@@ -11,10 +11,11 @@
 
 
 
-f_population_transition <-function(vertex_variables,vertex_pop_t, transition_proba){
+f_population <-function(vertex_variables,vertex_pop_t){
   ## for testing vertex_pop_t <- vertex_pop[t,]
   
   # for slaughterhouses only, remove all live animals to removed
+  
   vertex_variables$removed[vertex_parameters$type == "slaughter"] <-  vertex_variables$removed[vertex_parameters$type == "slaughter"] + 
     rowSums(vertex_variables[vertex_parameters$type == "slaughter",c(compartment_list[-compartment_num])]) #moving all pigs to "removed" in slaughterhouses
   vertex_variables[vertex_parameters$type == "slaughter",c(compartment_list[-compartment_num])] <- 0 # setting all other compartments of pigs in slaughterhouses back to zero
@@ -24,29 +25,35 @@ f_population_transition <-function(vertex_variables,vertex_pop_t, transition_pro
   vertex_variables$susceptible[vertex_variables$susceptible<0] <- 0
   vertex_variables$removed[vertex_pop_t<0] <- vertex_variables$removed[vertex_pop_t<0] + vertex_pop_t[vertex_pop_t<0] #adding the net births/deaths to removed when negative (when they are a net death)
   
-  transition_proba$farm
   ## advance disease stages (backwards from removed to latent)
-  comp=1
-  for(comp in (compartment_num-1):-1:2){
-    advance = rbinom( vertex_variables[vertex_parameters$type == "farm", comp] , 
-                      floor(vertex_variables[vertex_parameters$type == "farm",compartment_list[comp]]), 
-                      transition_proba$farm[comp])
-    vertex_variables[vertex_parameters$type == "farm",comp] = vertex_variables[vertex_parameters$type == "farm",comp] - advance
-    vertex_variables[vertex_parameters$type == "farm",comp+1] = vertex_variables[vertex_parameters$type == "farm",comp+1] + advance
-    
+
+
+  for(comp in (compartment_num-1):2){
+    advance = sum(rbinom( vertex_variables[vertex_parameters$type == "farm", comp+1] , 
+                      1, 
+                      transition_proba$farm[comp]))
+    if(length(advance) >0){
+    vertex_variables[vertex_parameters$type == "farm",comp+1] = vertex_variables[vertex_parameters$type == "farm",comp+1] - advance
+    vertex_variables[vertex_parameters$type == "farm",comp+2] = vertex_variables[vertex_parameters$type == "farm",comp+2] + advance # note that there is +1 in vertex_variable coming from the first column being the Vertex_ID
+    }
   }
-  vertex_variables[vertex_parameters$type == "farm",compartment_list[compartment_num]] <- 
-    vertex_variables[,compartment_list[compartment_num]] + 
-    vertex_variables[,compartment_list[compartment_num-1]] # start by adding to removed (from last clinical stage)
-  vertex_variables[,compartment_list[-c(1,2,compartment_num)]] <- vertex_variables[,compartment_list[-c(1,compartment_num-1,compartment_num)]] # move all compartments (except susceptible, latent and removed) one step to the right
-  vertex_variables[,compartment_list[2]] <- 0 # set latent to zero
+  vertex_variables[vertex_parameters$type == "farm","removed"] = vertex_variables[vertex_parameters$type == "farm","removed"] + vertex_variables[vertex_parameters$type == "farm","carcass"]
+  vertex_variables[vertex_parameters$type == "farm","carcass"] = 0
   
+  for(comp in (compartment_num-1):2){
+    advance = sum(rbinom( vertex_variables[vertex_parameters$type == "wildboar", comp+1] , 
+                          1, 
+                          transition_proba$wildboar[comp]))
+    if(length(advance) >0){
+      vertex_variables[vertex_parameters$type == "wildboar",comp+1] = vertex_variables[vertex_parameters$type == "wildboar",comp+1] - advance
+      vertex_variables[vertex_parameters$type == "wildboar",comp+2] = vertex_variables[vertex_parameters$type == "wildboar",comp+2] + advance # note that there is +1 in vertex_variable coming from the first column being the Vertex_ID
+    }
+  }
+  #vertex_variables[vertex_parameters$type == "wildboar","removed"] = vertex_variables[vertex_parameters$type == "wildboar","removed"] + vertex_variables[vertex_parameters$type == "wildboar","carcass"]
+  #vertex_variables[vertex_parameters$type == "wildboar","carcass"] = 0
   
-  
-  ## advance disease stages (backwards from removed to latent)
-  vertex_variables[,compartment_list[compartment_num]] <- vertex_variables[,compartment_list[compartment_num]] + vertex_variables[,compartment_list[compartment_num-1]] # start by adding to removed (from last clinical stage)
-  vertex_variables[,compartment_list[-c(1,2,compartment_num)]] <- vertex_variables[,compartment_list[-c(1,compartment_num-1,compartment_num)]] # move all compartments (except susceptible, latent and removed) one step to the right
-  vertex_variables[,compartment_list[2]] <- 0 # set latent to zero
   
   return(vertex_variables)
 }
+
+
