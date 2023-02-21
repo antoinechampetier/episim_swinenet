@@ -30,6 +30,16 @@ png(paste(relative_path_to_output,"/",scenario,"/","pigs_simulation.png",sep="")
 print(current_plot)
 dev.off()
 
+
+tspag = ggplot(df, aes(x=t_step, y=value)) + 
+  geom_line() + guides(colour = "none") + xlab("Time steps") 
+spag = tspag + aes(colour = factor(replication))
+current_plot <- spag + facet_wrap(~ variable, scales = "free")
+png(paste(relative_path_to_output,"/",scenario,"/","pigs_simulation_no_smooth.png",sep=""))
+print(current_plot)
+dev.off()
+
+
 ## make the plot for prevalence farms ####
 output_all_plot <- sim_output[,c("t_step" ,"replication" , "prevalence_farm", "prevalence_wb_units" , "incidence_farm",  "incidence_wb_units" )]
 df=melt(output_all_plot,id.vars = c("t_step", "replication"))
@@ -39,9 +49,17 @@ tspag = ggplot(df, aes(x=t_step, y=value)) +
   geom_line() + guides(colour = "none") + xlab("Time steps") 
 spag = tspag + aes(colour = factor(replication)) + geom_smooth(se=FALSE, colour="black", size=1)
 current_plot<- spag + facet_wrap(~ variable, scales = "free")
-
-
 png(paste(relative_path_to_output,"/",scenario,"/","farm_simulation.png",sep=""))
+print(current_plot)
+dev.off()
+
+
+#output_dat$t_step <- as.numeric(output_dat$t_step)
+tspag = ggplot(df, aes(x=t_step, y=value)) + 
+  geom_line() + guides(colour = "none") + xlab("Time steps") 
+spag = tspag + aes(colour = factor(replication))
+current_plot<- spag + facet_wrap(~ variable, scales = "free")
+png(paste(relative_path_to_output,"/",scenario,"/","farm_simulation_no_smooth.png",sep=""))
 print(current_plot)
 dev.off()
 
@@ -54,15 +72,20 @@ df=melt(output_all_plot,id.vars = c("t_step", "replication"))
 tspag = ggplot(df, aes(x=t_step, y=value)) + 
   geom_line() + guides(colour = "none") + xlab("Time steps") 
 spag = tspag + aes(colour = factor(replication)) + geom_smooth(se=FALSE, colour="black", size=1)
-
 current_plot <- spag + facet_wrap(~ variable, scales = "free")
-
-
 png(paste(relative_path_to_output,"/",scenario,"/","pigs_simulation.png",sep=""))
 print(current_plot)
 dev.off()
 
 
+#output_dat$t_step <- as.numeric(output_dat$t_step)
+tspag = ggplot(df, aes(x=t_step, y=value)) + 
+  geom_line() + guides(colour = "none") + xlab("Time steps") 
+spag = tspag + aes(colour = factor(replication)) 
+current_plot <- spag + facet_wrap(~ variable, scales = "free")
+png(paste(relative_path_to_output,"/",scenario,"/","pigs_simulation_no_smooth.png",sep=""))
+print(current_plot)
+dev.off()
 
 ## make the plot for side to side with prevalence farms and pigs####
 output_all_plot <- sim_output[,c("t_step" ,"replication" , "prevalence_pigs", "prevalence_farm" , "prevalence_wb", "prevalence_wb_units")]
@@ -84,7 +107,14 @@ print(current_plot)
 dev.off()
 
 
-
+#output_dat$t_step <- as.numeric(output_dat$t_step)
+tspag = ggplot(df, aes(x=t_step, y=value)) + 
+  geom_line() + guides(colour = "none") + xlab("Time steps") 
+spag = tspag + aes(colour = factor(replication))
+current_plot <- spag + facet_wrap(~ variable, scales = "free")
+png(paste(relative_path_to_output,"/",scenario,"/","farm_pigs_prevalence_no_smooth.png",sep=""))
+print(current_plot)
+dev.off()
 
 
 # ## make the plot for side to side with prevalence farms and pigs####

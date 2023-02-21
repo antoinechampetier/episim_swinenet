@@ -29,9 +29,9 @@ f_population <-function(vertex_variables,vertex_pop_t){
 
 
   for(comp in (compartment_num-1):2){
-    advance = sum(rbinom( vertex_variables[vertex_parameters$type == "farm", comp+1] , 
-                      1, 
-                      transition_proba$farm[comp]))
+    advance = rbinom( nrow(vertex_variables[vertex_parameters$type == "farm",]) , 
+                      floor(vertex_variables[vertex_parameters$type == "farm", comp+1]), 
+                      transition_proba$farm[comp])
     if(length(advance) >0){
     vertex_variables[vertex_parameters$type == "farm",comp+1] = vertex_variables[vertex_parameters$type == "farm",comp+1] - advance
     vertex_variables[vertex_parameters$type == "farm",comp+2] = vertex_variables[vertex_parameters$type == "farm",comp+2] + advance # note that there is +1 in vertex_variable coming from the first column being the Vertex_ID
@@ -41,14 +41,18 @@ f_population <-function(vertex_variables,vertex_pop_t){
   vertex_variables[vertex_parameters$type == "farm","carcass"] = 0
   
   for(comp in (compartment_num-1):2){
-    advance = sum(rbinom( vertex_variables[vertex_parameters$type == "wildboar", comp+1] , 
-                          1, 
-                          transition_proba$wildboar[comp]))
+    advance = rbinom( nrow(vertex_variables[vertex_parameters$type == "wildboar",]) , 
+                      floor(vertex_variables[vertex_parameters$type == "wildboar", comp+1]), 
+                      transition_proba$wildboar[comp])
     if(length(advance) >0){
       vertex_variables[vertex_parameters$type == "wildboar",comp+1] = vertex_variables[vertex_parameters$type == "wildboar",comp+1] - advance
       vertex_variables[vertex_parameters$type == "wildboar",comp+2] = vertex_variables[vertex_parameters$type == "wildboar",comp+2] + advance # note that there is +1 in vertex_variable coming from the first column being the Vertex_ID
     }
   }
+  # restore the susceptible population to the base in wildboar units)
+  vertex_variables$susceptible[vertex_parameters$type == "wildboar"] <-  regen_wild_boar *init_vertex_variable$susceptible[vertex_parameters$type == "wildboar"] 
+  
+  
   #vertex_variables[vertex_parameters$type == "wildboar","removed"] = vertex_variables[vertex_parameters$type == "wildboar","removed"] + vertex_variables[vertex_parameters$type == "wildboar","carcass"]
   #vertex_variables[vertex_parameters$type == "wildboar","carcass"] = 0
   
